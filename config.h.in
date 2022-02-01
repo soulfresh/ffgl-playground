@@ -1,0 +1,2 @@
+#define lolpxl_VERSION_MAJOR @lolpxl_VERSION_MAJOR@
+#define lolpxl_VERSION_MINOR @lolpxl_VERSION_MINOR@
