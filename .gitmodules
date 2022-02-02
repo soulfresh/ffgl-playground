@@ -1,0 +1,6 @@
+[submodule "vcpkg"]
+	path = vcpkg
+	url = https://github.com/microsoft/vcpkg
+[submodule "deps/ffgl"]
+	path = deps/ffgl
+	url = git@github.com:resolume/ffgl.git
