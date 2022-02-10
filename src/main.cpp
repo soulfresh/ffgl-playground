@@ -1,7 +1,7 @@
 // Your First C++ Program
 
 #include <iostream>
-#include <glm.hpp>
+#include <glm/glm.hpp>
 #include "FFGLSDK.h"
 
 int main() {

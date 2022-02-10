@@ -1,9 +1,35 @@
+cmake_minimum_required(VERSION 3.18)
+
 set(include "")
 set(headers "")
 set(sources main.cpp)
 
-set(LOLPXL_INCLUDE_DIR ${include} PARENT_SCOPE)
-set(LOLPXL_HEADERS ${headers} PARENT_SCOPE)
-set(LOLPXL_SOURCES ${sources} PARENT_SCOPE)
+# Debug a variable
+# function (ListToString result delim)
+#     list(GET ARGV 2 temp)
+#     math(EXPR N "${ARGC}-1")
+#     foreach(IDX RANGE 3 ${N})
+#         list(GET ARGV ${IDX} STR)
+#         set(temp "${temp}${delim}${STR}")
+#     endforeach()
+#     set(${result} "${temp}" PARENT_SCOPE)
+# endfunction(ListToString)
+#
+# ListToString(ffgl_src ";\n" ${FFGL_SOURCES})
 
-add_executable(lolpxl ${headers} ${sources})
+add_executable(lolpxl
+  ${sources}
+  ${FFGL_SOURCES}
+)
+
+target_include_directories(lolpxl PUBLIC
+  ${FFGL_INCLUDE_DIRS}
+  ${GLM_INCLUDE_DIRS}
+)
+
+# -framework linker flags
+find_library(OPENGL OpenGL REQUIRED)
+
+target_link_libraries(lolpxl
+  ${OPENGL}
+)

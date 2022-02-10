@@ -3,9 +3,6 @@ cmake_minimum_required(VERSION 3.18)
 # Create a compile_commands.json for VIM/ccls
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake
-#     CACHE STRING "Vcpkg toolchain file")
-
 # set the project name
 project(lolpxl VERSION 0.0.1)
 
@@ -27,31 +24,34 @@ ENDIF( APPLE )
 # provide preprocessor environment variables
 configure_file(config.h.in config.h)
 
-add_subdirectory(src)
-add_subdirectory(lib)
 add_subdirectory(deps)
+add_subdirectory(lib)
+add_subdirectory(src)
 
-# OpenGL
-find_package(OpenGL REQUIRED)
+# Export the commands db for clangd/ccls IDE integrations
+install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION ${CMAKE_CURRENT_LIST_DIR})
 
-# GLM
-# find_package(GLM REQUIRED)
-# message(STATUS "GLM included at ${GLM_INCLUDE_DIR}")
+# TODO These linker flags need to be set:
+# LINKER_FLAGS = -framework OpenGL -framework Carbon -framework AppKit
 
-message('GLM_INCLUDE_DIR? ${GLM_INCLUDE_DIR}')
-# TODO Should this be in src/CMakeLists or should the add_executable command be here?
-target_include_directories(lolpxl PUBLIC ${FFGL_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
-target_link_libraries(lolpxl PRIVATE ffgl)
-
-####### VCPKG #########
-
-# set(glm_DIR ${CMAKE_CURRENT_LIST_DIR}/vcpkg/packages/glm_x64-osx/share/glm)
-# find_package(glm CONFIG REQUIRED)
-# target_include_directories(lolpxl SYSTEM PRIVATE $ENV{INCLUDE})
-# target_link_libraries(lolpxl PRIVATE glm::glm)
-
-
-# TODO this fails on a fresh build
-# If we run into language server issues with clangd,
-# use the following to generate a compile_commands.json file.
-file(INSTALL ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION ${CMAKE_CURRENT_LIST_DIR})
+# TODO These compilation flags need to be set:
+# MACOSX_DEPLOYMENT_TARGET = 10.9
+# USE_HEADERMAP = NO
+# CLANG_CXX_LANGUAGE_STANDARD = c++17
+# CLANG_CXX_LIBRARY = libc++
+# ALWAYS_SEARCH_USER_PATHS = NO
+# CLANG_WARN_DOCUMENTATION_COMMENTS = NO
+# //Unused variables may happen in subclasses overriding virtual functions. It's not an option to remove the variable names or
+# //have them commented out because this breaks the ability to scan through code without reading it as
+# //it's much more common that variable names are present in their normal form so that's what readers expect the most.
+# GCC_WARN_UNUSED_VARIABLE = NO
+# //Having to handle every tiny little warning is annoying, but having this disabled will result
+# //in warnings building up to a point where new warnings cannot be recognised anymore and thus issues
+# //will seep into the code.
+# GCC_TREAT_WARNINGS_AS_ERRORS = YES
+# //Apple deprecates functions without providing alternatives. We want to use deprecated functions
+# //for as long as possible. This will cause the bulk of the update work to be moved to the point where
+# //the functions are actually removed. But updating is only done when it's safe to do so and when a function
+# //has finally been removed it has been deprecated for the longest possible time so the likelyhood of a
+# //correctly functioning alternative is better than updating sooner.
+# GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO
