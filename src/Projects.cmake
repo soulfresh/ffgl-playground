@@ -41,8 +41,7 @@ macro(AddPlugin name)
   )
 
   # Precompile all headers in deps and libs
-  # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
-  # target_precompile_headers(${name} REUSE_FROM FFGL)
+  target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
 
   # Output a bundle file.
   set_target_properties(${name} PROPERTIES BUNDLE TRUE)

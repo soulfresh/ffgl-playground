@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 
+# TODO Add these once there are library files
 # file(GLOB_RECURSE headers ${CMAKE_CURRENT_LIST_DIR}/*.hpp ${CMAKE_CURRENT_LIST_DIR}/*.h)
 # file(GLOB_RECURSE sources ${CMAKE_CURRENT_LIST_DIR}/*.cpp)
 
 # set(LIB_HEADERS headers PARENT_SCOPE)
 # set(LIB_SOURCES sources PARENT_SCOPE)
-# set(LIB_HEADERS "" PARENT_SCOPE)
-# set(LIB_SOURCES "" PARENT_SCOPE)
-set(LIB_HEADERS "")
-set(LIB_SOURCES "")
+set(LIB_HEADERS "" PARENT_SCOPE)
+set(LIB_SOURCES "" PARENT_SCOPE)
 set(LIB_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} PARENT_SCOPE)

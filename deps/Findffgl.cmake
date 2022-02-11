@@ -19,7 +19,7 @@ file(GLOB_RECURSE ffgl_sources ${ffgl_include}/*.cpp)
 
 # Remove the glsdk/glload library. Not sure why it's included in
 # the FFGL SDK.
-# list(FILTER ffgl_headers EXCLUDE REGEX "glsdk")
+list(FILTER ffgl_headers EXCLUDE REGEX "glsdk")
 list(FILTER ffgl_sources EXCLUDE REGEX "glsdk")
 list(FILTER ffgl_sources EXCLUDE REGEX "FFGLSDK.cpp")
 
