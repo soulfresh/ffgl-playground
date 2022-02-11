@@ -6,18 +6,15 @@ include(Projects.cmake)
 AddAllPlugins()
 
 ### TEMP APP ###
-# set(sources main.cpp)
-#
-# add_executable(lolpxl
-#   ${sources}
-#   ${FFGL_SOURCES}
+# add_executable(DUMMY
+#   dummy.cpp
+#   $<TARGET_OBJECTS:FFGL>
 # )
 #
-# target_include_directories(lolpxl PUBLIC
-#   ${FFGL_INCLUDE_DIRS}
-#   ${GLM_INCLUDE_DIRS}
+# target_include_directories(DUMMY PUBLIC
+#   ${DEPS_INCLUDE_DIRS}
+#   ${LIB_INCLUDE_DIRS}
 # )
-#
-# # -framework linker flags
-# find_library(OPENGL OpenGL REQUIRED)
-# target_link_libraries(lolpxl ${OPENGL})
+
+# target_precompile_headers(DUMMY PUBLIC ${DEPS_HEADERS} ${LIBS_HEADERS})
+

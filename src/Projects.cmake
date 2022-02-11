@@ -21,7 +21,8 @@ endmacro()
 
 ###
 # Add a new plugin to the build. The name of the folder and
-# the output plugin name will be the same.
+# the output plugin name will be the same. Every plugin is
+# built the same way.
 #
 # Example:
 # AddPlugin(MyPluginName)
@@ -34,19 +35,28 @@ macro(AddPlugin name)
   # Build the plugin as a module library.
   add_library(${name} MODULE
     ${sources}
-    ${headers}
-    ${FFGL_SOURCES}
+    # Include FFGL as pre-compiled objects.
+    # Not sure why I can't get a static lib to work instead.
+    $<TARGET_OBJECTS:FFGL>
   )
+
+  # Precompile all headers in deps and libs
+  # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
+  # target_precompile_headers(${name} REUSE_FROM FFGL)
 
   # Output a bundle file.
   set_target_properties(${name} PROPERTIES BUNDLE TRUE)
   target_include_directories(${name} PUBLIC
+    # ${DEPS_INCLUDE_DIRS}
     ${FFGL_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}
+    ${LIB_INCLUDE_DIRS}
   )
 
   # Plugin dependencies
-  target_link_libraries(${name} ${OPENGL})
+  target_link_libraries(${name}
+    ${OPENGL}
+  )
 
   # Install the generated plugin to the local plugins directory
   install(TARGETS ${name} DESTINATION ${PLUGIN_OUTPUT_DIRECTORY})
@@ -65,6 +75,5 @@ macro(AddAllPlugins)
   foreach(subdir ${projects})
     message(STATUS "Found Plugin: ${subdir}")
     AddPlugin(${subdir})
-    # add_subdirectory(${subdir})
   endforeach()
 endmacro()
