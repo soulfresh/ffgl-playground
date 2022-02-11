@@ -37,18 +37,20 @@ macro(AddPlugin name)
     ${sources}
     # Include FFGL as pre-compiled objects.
     # Not sure why I can't get a static lib to work instead.
+    # extern maybe?
     $<TARGET_OBJECTS:FFGL>
   )
 
   # Precompile all headers in deps and libs
-  target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
+  target_precompile_headers(${name} REUSE_FROM PCH)
+  # I'm not sure if using the PCH library is any faster than
+  # just building on per plugin.
+  # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
 
   # Output a bundle file.
   set_target_properties(${name} PROPERTIES BUNDLE TRUE)
   target_include_directories(${name} PUBLIC
-    # ${DEPS_INCLUDE_DIRS}
-    ${FFGL_INCLUDE_DIRS}
-    ${GLM_INCLUDE_DIRS}
+    ${DEPS_INCLUDE_DIRS}
     ${LIB_INCLUDE_DIRS}
   )
 

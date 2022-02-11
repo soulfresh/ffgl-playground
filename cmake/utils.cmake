@@ -16,12 +16,14 @@ function (ListToString result delim)
 endfunction(ListToString)
 
 # Example:
-# ListToString(ffgl_src ";\n" ${FFGL_SOURCES})
+# ListToString(ffgl_src ";\n" ${my_list})
 
 ###
 # Nicely print the contents of the given list.
 ###
 function(PrintList list)
-  ListToString(temp ";\n" ${FFGL_SOURCES})
+  # TODO This isn't working
+  set(list2 ${list})
+  ListToString(temp ";\n" ${list2})
   message(${temp})
 endfunction()
