@@ -10,6 +10,10 @@ set(DEPS_DIR ${CMAKE_CURRENT_LIST_DIR}/deps)
 set(LIBS_DIR ${CMAKE_CURRENT_LIST_DIR}/libs)
 set(SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
+# Where to output plugins during development so they can be tested
+# in FFGL hosts.
+set(PLUGIN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/plugins)
+
 # specify the C++ standard
 # TODO We should specify 17 for more than just apple
 # set(CMAKE_CXX_STANDARD 17)

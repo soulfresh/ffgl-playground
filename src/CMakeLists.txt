@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(include "")
-set(headers "")
-set(sources main.cpp)
-
 # Debug a variable
 # function (ListToString result delim)
 #     list(GET ARGV 2 temp)
@@ -17,6 +13,11 @@ set(sources main.cpp)
 #
 # ListToString(ffgl_src ";\n" ${FFGL_SOURCES})
 
+add_subdirectory(Gradients)
+
+### TEMP APP ###
+set(sources main.cpp)
+
 add_executable(lolpxl
   ${sources}
   ${FFGL_SOURCES}
@@ -29,7 +30,4 @@ target_include_directories(lolpxl PUBLIC
 
 # -framework linker flags
 find_library(OPENGL OpenGL REQUIRED)
-
-target_link_libraries(lolpxl
-  ${OPENGL}
-)
+target_link_libraries(lolpxl ${OPENGL})
