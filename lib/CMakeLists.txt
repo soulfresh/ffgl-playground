@@ -1,3 +1,8 @@
 # SET( INCLUDE_FILES Hello.h )
 # SET( SOURCE_FILES Hello.cpp )
 # ADD_LIBRARY( lolpxl STATIC ${INCLUDE_FILES} ${SOURCE_FILES} )
+
+set(PCHEADERS
+  ffgl.h
+  PARENT_SCOPE
+)

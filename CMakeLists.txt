@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
+include(cmake/utils.cmake)
+
 # Create a compile_commands.json for VIM/ccls
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -32,8 +34,12 @@ add_subdirectory(deps)
 add_subdirectory(lib)
 add_subdirectory(src)
 
-# Export the commands db for clangd/ccls IDE integrations
-install(FILES ${PROJECT_BINARY_DIR}/compile_commands.json DESTINATION ${CMAKE_CURRENT_LIST_DIR})
+# Symlink the commands db for clangd/ccls IDE integrations
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E create_symlink
+  ${CMAKE_BINARY_DIR}/compile_commands.json
+  ${CMAKE_SOURCE_DIR}/compile_commands.json
+)
 
 # TODO These linker flags need to be set:
 # LINKER_FLAGS = -framework OpenGL -framework Carbon -framework AppKit
