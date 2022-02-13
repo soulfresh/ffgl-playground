@@ -12,5 +12,13 @@ target_link_libraries(PCH ${OPENGL})
 target_precompile_headers(PCH PUBLIC ${DEPS_HEADERS} ${LIBS_HEADERS})
 
 ### PLUGINS ###
-# Include the cmake list for each subdirectory.
-AddAllPlugins()
+# Get the list of subdirectories that contain plugins to compile.
+# This would be any subdirectory other than "playground".
+subdir_list(plugin_groups ${CMAKE_CURRENT_LIST_DIR})
+list(FILTER plugin_groups EXCLUDE REGEX "playground")
+
+# Generate the build for each plugin found in the plugin groups.
+foreach(group ${plugin_groups})
+  message(STATUS "Processing ${group} plugins...")
+  add_all_plugins(${CMAKE_CURRENT_LIST_DIR}/${group})
+endforeach()

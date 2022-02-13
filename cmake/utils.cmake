@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.18)
 # @param result - The variable to set
 # @param delim - The delimiter to use
 ###
-function (ListToString result delim)
+function (list_to_string result delim)
   list(GET ARGV 2 temp)
   math(EXPR N "${ARGC}-1")
   foreach(IDX RANGE 3 ${N})
@@ -13,18 +13,18 @@ function (ListToString result delim)
     set(temp "${temp}${delim}${STR}")
   endforeach()
   set(${result} "${temp}" PARENT_SCOPE)
-endfunction(ListToString)
+endfunction(list_to_string)
 
 # Example:
-# ListToString(ffgl_src ";\n" ${my_list})
+# list_to_string(ffgl_src ";\n" ${my_list})
 
 ###
 # Nicely print the contents of the given list.
 ###
-# function(PrintList list)
+# function(print_list list)
 #   # TODO This isn't working
 #   set(list2 ${list})
-#   ListToString(temp ";\n" ${list2})
+#   list_to_string(temp ";\n" ${list2})
 #   message(${temp})
 # endfunction()
 
@@ -34,9 +34,9 @@ endfunction(ListToString)
 # @param curdir - The directory to look in
 #
 # Example:
-# SubDirList(projects ${CMAKE_CURRENT_LIST_DIR})
+# subdir_list(projects ${CMAKE_CURRENT_LIST_DIR})
 ###
-macro(SubDirList result curdir)
+macro(subdir_list result curdir)
   file(GLOB children RELATIVE ${curdir} ${curdir}/*)
   set(dirlist "")
   foreach(child ${children})

@@ -6,9 +6,9 @@ cmake_minimum_required(VERSION 3.18)
 # built the same way.
 #
 # Example:
-# AddPlugin(MyPluginName)
+# add_plugin(MyPluginName)
 ###
-macro(AddPlugin name)
+macro(add_plugin name)
   # sources for this plugin
   file(GLOB_RECURSE headers ${CMAKE_CURRENT_LIST_DIR}/${name}/*.hpp ${CMAKE_CURRENT_LIST_DIR}/${name}/*.h)
   file(GLOB_RECURSE sources ${CMAKE_CURRENT_LIST_DIR}/${name}/*.cpp)
@@ -49,13 +49,13 @@ endmacro()
 # as plugins using the folder name as the plugin name.
 #
 # Example:
-# AddAllPlugins()
+# add_all_plugins()
 ###
-macro(AddAllPlugins)
-  SubDirList(projects ${CMAKE_CURRENT_LIST_DIR})
+macro(add_all_plugins root)
+  subdir_list(projects ${root})
 
   foreach(subdir ${projects})
     message(STATUS "Found Plugin: ${subdir}")
-    AddPlugin(${subdir})
+    add_plugin(${subdir})
   endforeach()
 endmacro()
