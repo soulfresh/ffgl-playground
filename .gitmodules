@@ -4,6 +4,3 @@
 [submodule "deps/glm"]
 	path = deps/glm
 	url = git@github.com:g-truc/glm.git
-[submodule "deps/premake-export-compile-commands"]
-	path = deps/premake-export-compile-commands
-	url = git@github.com:tarruda/premake-export-compile-commands.git
