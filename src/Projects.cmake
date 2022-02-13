@@ -1,25 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
 ###
-# Get a list of all subdirectories of a directory
-# @param result - The variable to set
-# @param curdir - The directory to look in
-#
-# Example:
-# SubDirList(projects ${CMAKE_CURRENT_LIST_DIR})
-###
-macro(SubDirList result curdir)
-  file(GLOB children RELATIVE ${curdir} ${curdir}/*)
-  set(dirlist "")
-  foreach(child ${children})
-    if(IS_DIRECTORY ${curdir}/${child})
-      LIST(APPEND dirlist ${child})
-    endif()
-  endforeach()
-  set(${result} ${dirlist})
-endmacro()
-
-###
 # Add a new plugin to the build. The name of the folder and
 # the output plugin name will be the same. Every plugin is
 # built the same way.

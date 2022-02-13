@@ -21,9 +21,28 @@ endfunction(ListToString)
 ###
 # Nicely print the contents of the given list.
 ###
-function(PrintList list)
-  # TODO This isn't working
-  set(list2 ${list})
-  ListToString(temp ";\n" ${list2})
-  message(${temp})
-endfunction()
+# function(PrintList list)
+#   # TODO This isn't working
+#   set(list2 ${list})
+#   ListToString(temp ";\n" ${list2})
+#   message(${temp})
+# endfunction()
+
+###
+# Get a list of all subdirectories of a directory
+# @param result - The variable to set
+# @param curdir - The directory to look in
+#
+# Example:
+# SubDirList(projects ${CMAKE_CURRENT_LIST_DIR})
+###
+macro(SubDirList result curdir)
+  file(GLOB children RELATIVE ${curdir} ${curdir}/*)
+  set(dirlist "")
+  foreach(child ${children})
+    if(IS_DIRECTORY ${curdir}/${child})
+      LIST(APPEND dirlist ${child})
+    endif()
+  endforeach()
+  set(${result} ${dirlist})
+endmacro()
