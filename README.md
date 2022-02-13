@@ -1,5 +1,15 @@
-# lolpxl
-FFGL plugin development area.
+# ffgl-playground
+A development area for building FFGL plugins.
+
+Includes:
+- Ready to use Cmake based build system
+- Dependency management with git submodules
+
+Coming soon...
+- Plugin preview host with
+    - `imGui` integration
+    - Plugin hot reload
+    - Debug support
 
 ## Dependencies
 

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.18)
 
+include(CheckIPOSupported)
+
+check_ipo_supported(RESULT ipo_supported OUTPUT error)
+
 ###
 # Add a new plugin to the build. The name of the folder and
 # the output plugin name will be the same. Every plugin is
@@ -21,6 +25,11 @@ macro(add_plugin name)
     # extern maybe?
     $<TARGET_OBJECTS:FFGL>
   )
+
+  # Use link time optimizations in the release build
+  if( ipo_supported AND NOT CMAKE_BUILD_TYPE MATCHES DEBUG)
+    set_property(TARGET ${name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
 
   # Precompile all headers in deps and libs
   target_precompile_headers(${name} REUSE_FROM PCH)
