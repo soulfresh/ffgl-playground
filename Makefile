@@ -9,18 +9,18 @@ gen-xcode:
 
 gen-make-debug:
 	@echo "Generating make based Debug project..."
-	cmake -B ./build/make/debug -S . -DCMAKE_BUILD_TYPE=Debug
+	cmake -B ./build/make/debug -S . -DCMAKE_BUILD_TYPE=Debug -DLINK_COMPILE_COMMANDS:string=true
 	@echo "🏗"
 
 gen-make-release:
 	@echo "Generating make based Release project..."
-	cmake -B ./build/make/release -S . -DCMAKE_BUILD_TYPE=Release
+	cmake -B ./build/make/release -S . -DCMAKE_BUILD_TYPE=Release -DLINK_COMPILE_COMMANDS=true
 	@echo "🏗"
 
 # Generate a release but maintain debug info
 gen-make-release-debinfo:
 	@echo "Generating make based Release project with debug info..."
-	cmake -B ./build/make/releasedebinfo -S . -DCMAKE_BUILD_TYPE=RelWithDebInfo
+	cmake -B ./build/make/releasedebinfo -S . -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLINK_COMPILE_COMMANDS=true
 	@echo "🏗"
 
 # Shorthand for my favorite build. Customize to yours.
@@ -47,7 +47,7 @@ install:
 	cmake --install ./build/make/debug/src
 
 all: gradients sp
-	@echo "😅"
+	@echo "Donzo! 😅"
 
 all-release: sp-release
 	@echo "🙌"
@@ -55,18 +55,21 @@ all-release: sp-release
 gradients:
 	@echo "Building Gradients example plugin..."
 	cmake --build ./build/make/debug --target Gradients
+	rm -rf plugins/*
 	cmake --install ./build/make/debug/src
 	@echo "💪"
 
 sp:
 	@echo "Building SpiderPoints plugin..."
 	cmake --build ./build/make/debug --target SpiderPoints
+	rm -rf plugins/*
 	cmake --install ./build/make/debug/src
 	@echo "🕷"
 
 sp-release:
 	@echo "Building SpiderPoints RELEASE plugin..."
 	cmake --build ./build/make/release --target SpiderPoints
+	rm -rf plugins/*
 	cmake --install ./build/make/release/src
 	@echo "🕷"
 
@@ -74,4 +77,5 @@ logs:
 	@echo "Tailing Resolume logs..."
 	# You will need to customize this with the location of your log file
 	tail -f -n 600 /Users/marc/Library/Logs/Resolume\ Avenue/Resolume\ Avenue\ log.txt
+
 

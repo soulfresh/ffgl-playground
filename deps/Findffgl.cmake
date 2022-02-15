@@ -39,6 +39,7 @@ add_library(FFGL OBJECT ${sources})
 # Link in dependencies
 find_library(OPENGL OpenGL REQUIRED)
 target_link_libraries(FFGL ${OPENGL})
+target_compile_options(FFGL PUBLIC ${GLOBAL_COMPILER_FLAGS})
 
 ### OUTPUT ###
 # Using CACHE variables so they are exposed all the way to the top level CMakeLists

@@ -37,7 +37,7 @@ macro(add_plugin name directory)
     target_precompile_headers(${name} REUSE_FROM PCH)
     # I'm not sure if using the PCH library is any faster than
     # just building on per plugin.
-    # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS} ${LIB_HEADERS})
+    # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS})
 
     # Output a bundle file.
     set_target_properties(${name} PROPERTIES BUNDLE TRUE)
@@ -51,8 +51,8 @@ macro(add_plugin name directory)
       ${OPENGL}
     )
 
-    # Install the generated plugin to the local plugins directory
-    install(TARGETS ${name} DESTINATION ${PLUGIN_OUTPUT_DIRECTORY})
+    # Compile options
+    target_compile_options(${name} PUBLIC ${GLOBAL_COMPILER_FLAGS})
   else()
     message(WARNING "${name} Plugin folder is empty: ${directory}")
   endif()

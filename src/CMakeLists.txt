@@ -6,10 +6,13 @@ include(Projects.cmake)
 # Create a dummy target so we can generate/use
 # the same precompiled headers for all plugins.
 add_executable(PCH pch.cpp $<TARGET_OBJECTS:FFGL>)
-target_include_directories(PCH PUBLIC ${DEPS_INCLUDE_DIRS} ${LIB_INCLUDE_DIRS})
+target_include_directories(PCH PUBLIC ${DEPS_INCLUDE_DIRS})
 target_link_libraries(PCH ${OPENGL})
 
-target_precompile_headers(PCH PUBLIC ${DEPS_HEADERS} ${LIBS_HEADERS})
+# Only the `/deps` folder is used in the precompiled
+# headers to avoid any weirdness if the libs change.
+target_precompile_headers(PCH PUBLIC ${DEPS_HEADERS})
+target_compile_options(PCH PUBLIC ${GLOBAL_COMPILER_FLAGS})
 
 ### PLUGINS ###
 # Get the list of subdirectories that contain plugins to compile.
@@ -21,3 +24,6 @@ list(FILTER plugin_groups EXCLUDE REGEX "playground")
 foreach(group ${plugin_groups})
   add_all_plugins(${CMAKE_CURRENT_LIST_DIR}/${group})
 endforeach()
+
+# Install the generated plugin to the local plugins directory
+install(TARGETS DESTINATION ${PLUGIN_OUTPUT_DIRECTORY})

@@ -56,14 +56,24 @@ plugins as they are built.
 ### Resolume
 See: https://github.com/resolume/ffgl/wiki/4.-Convenience-tips
 
-## Adding New Libraries
+## Dependency Management
+Dependencies (ie. the FFGL SDK) are installed in the project as submodules.
+You can add additional dependencies however you want but here are some
+directions on how I use submodules to manage the dependencies.
+
+### Adding New Libraries
 
     cd ./deps
     git submodule add ${REPO_URL}
     cd ./${REPO_NAME}
     git checkout tags/${VERSION_NUMBER}
 
-## Removing Libraries
+### Removing Libraries
 
     git rm ./deps/${REPO_NAME}
+
+## compile_commands.json
+If you need a compile database generated for your IDE, you can pass
+`-DLINK_COMPILE_COMMANDS` when generating the project and the `compile_commands.json`
+file will be linked in the root of the project.
 
