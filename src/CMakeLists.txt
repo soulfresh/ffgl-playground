@@ -19,6 +19,5 @@ list(FILTER plugin_groups EXCLUDE REGEX "playground")
 
 # Generate the build for each plugin found in the plugin groups.
 foreach(group ${plugin_groups})
-  message(STATUS "Processing ${group} plugins...")
   add_all_plugins(${CMAKE_CURRENT_LIST_DIR}/${group})
 endforeach()
