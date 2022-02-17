@@ -13,8 +13,8 @@ foreach(lib ${libraries})
 
   # Add the files to the lib variables so they can be added to
   # the plugins.
-  set(LIB_HEADERS headers PARENT_SCOPE)
-  set(LIB_SOURCES sources PARENT_SCOPE)
+  set(LIB_HEADERS ${headers} PARENT_SCOPE)
+  set(LIB_SOURCES ${sources} PARENT_SCOPE)
 
   # Get an uppercased variable name we can use outside of this
   # file to refer to the files inside each library folder (ex. MYLIB_LIB_HEADERS).

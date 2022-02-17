@@ -21,6 +21,8 @@ macro(add_plugin name directory)
   # Build the plugin as a module library.
   add_library(${name} MODULE
     ${sources}
+    # TODO Build and include libraries instead.
+    ${LIB_SOURCES}
     # Include FFGL as pre-compiled objects.
     # Not sure why I can't get a static lib to work instead.
     # TODO extern plugMain maybe?
