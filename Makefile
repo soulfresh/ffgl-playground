@@ -78,4 +78,9 @@ logs:
 	# You will need to customize this with the location of your log file
 	tail -f -n 600 /Users/marc/Library/Logs/Resolume\ Avenue/Resolume\ Avenue\ log.txt
 
+# You can ignore this task. I use it to sync my
+# changes to this repo from my private plugin repo.
+sync:
+	@echo "Synching to ffgl-playground..."
+	rsync -av --progress --delete --exclude /.git --include /.git/modules --exclude /deps/ --exclude /src/lolpxl/ --exclude /lib/lolpxl/ ./ ../ffgl-playground
 
