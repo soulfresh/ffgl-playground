@@ -44,6 +44,9 @@ message("Compiler Flags: ${GLOBAL_COMPILER_FLAGS}")
 # in FFGL hosts.
 set(PLUGIN_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/plugins)
 
+# Make sure the plugin output directory exists
+file(MAKE_DIRECTORY "${PLUGIN_OUTPUT_DIR}")
+
 # Include the subdirectories involved in the build
 set(DEPS_DIR ${CMAKE_CURRENT_LIST_DIR}/deps)
 set(LIBS_DIR ${CMAKE_CURRENT_LIST_DIR}/libs)

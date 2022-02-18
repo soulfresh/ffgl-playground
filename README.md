@@ -3,13 +3,16 @@ A development area for building FFGL plugins.
 
 Includes:
 - Ready to use Cmake based build system
+- Precompiled header support
 - Dependency management with git submodules
+- Language server support
 
 Coming soon...
+- Plugin generator
 - Plugin preview host with
-    - `imGui` integration
-    - Plugin hot reload
-    - Debug support
+  - `imGui` integration
+  - Plugin hot reload
+  - Debug support
 
 ## Dependencies
 
@@ -31,9 +34,9 @@ which are linked as submodules.
 
 Next create a folder inside of `src` that will contain your first plugin.
 You will need to create your plugins two folders deep. The first level
-is a namespace for your plugins. Inside of that will be a folder for
-each plugin you create. You can copy one of the `src/example` folders as
-quick way to get started.
+is a namespace for your plugins (ex. `source-plugins` or `my-project-a`).
+Inside of that should be a folder for each plugin you create.
+See the `src/example` folders as for reference.
 
     touch src/myplugins/firstplugin/FirstPlugin.h
     touch src/myplugins/firstplugin/FirstPlugin.cpp
@@ -71,6 +74,11 @@ directions on how I use submodules to manage the dependencies.
 ### Removing Libraries
 
     git rm ./deps/${REPO_NAME}
+
+## Precompiled Headers
+Any `.pch` files found a `/lib` or `/src` subdirectory will be treated as a
+precompiled header. If none are found, the FFGL SDK headers will be automatically
+precompiled and included in your plugins.
 
 ## compile_commands.json
 If you need a compile database generated for your IDE, you can pass
