@@ -25,5 +25,7 @@ foreach(group ${plugin_groups})
   add_all_plugins(${CMAKE_CURRENT_LIST_DIR}/${group})
 endforeach()
 
+# Replaced with an add_custom_command in the Projects.cmake file.
+# Keeping this for a little bit to make sure install continues to work.
 # Install the generated plugin to the local plugins directory
-install(TARGETS DESTINATION ${PLUGIN_OUTPUT_DIRECTORY})
+# install(TARGETS DESTINATION ${PLUGIN_OUTPUT_DIRECTORY})

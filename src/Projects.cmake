@@ -21,8 +21,6 @@ macro(add_plugin name directory)
   # Build the plugin as a module library.
   add_library(${name} MODULE
     ${sources}
-    # TODO Build and include libraries instead.
-    ${LIB_SOURCES}
     # Include FFGL as pre-compiled objects.
     # Not sure why I can't get a static lib to work instead.
     # TODO extern plugMain maybe?
@@ -35,26 +33,59 @@ macro(add_plugin name directory)
       set_property(TARGET ${name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
 
-    # Precompile all headers in deps and libs
-    target_precompile_headers(${name} REUSE_FROM PCH)
-    # I'm not sure if using the PCH library is any faster than
-    # just building on per plugin.
-    # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS})
+    # If any .pch files are found in the plugin directory,
+    # use those as precompiled headers for the plugin (adding in
+    # all headers from the deps folder). Otherwise, reuse the
+    # generic .pch generated for /src/pch.cpp
+    file(GLOB_RECURSE pchs ${directory}/*.pch)
+    if (pchs)
+      # Treat any file with a .pch extension as precompiled header list.
+      target_precompile_headers(${name} PUBLIC ${pchs} ${DEPS_HEADERS})
+    else()
+      # Precompile all headers in deps and libs
+      target_precompile_headers(${name} REUSE_FROM PCH)
+      # I'm not sure if using the PCH library is any faster than
+      # just building on per plugin.
+      # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS})
+    endif()
+
 
     # Output a bundle file.
     set_target_properties(${name} PROPERTIES BUNDLE TRUE)
     target_include_directories(${name} PUBLIC
+      ${CMAKE_CURRENT_LIST_DIR}
       ${DEPS_INCLUDE_DIRS}
       ${LIB_INCLUDE_DIRS}
     )
 
     # Plugin dependencies
     target_link_libraries(${name}
+      # Local libraries in the /libs folder
+      ${LIBS}
+      # Other library/dependencies
       ${OPENGL}
     )
 
     # Compile options
     target_compile_options(${name} PUBLIC ${GLOBAL_COMPILER_FLAGS})
+
+    # Copy plugin to the /plugins directory for easy access.
+    set(bundle_name ${name}.bundle)
+    set(bundle_input ${CMAKE_CURRENT_BINARY_DIR}/${bundle_name})
+    set(bundle_output ${PLUGIN_OUTPUT_DIRECTORY}/${bundle_name})
+
+    # message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
+    # message("PLUGIN_OUTPUT_DIRECTORY: ${PLUGIN_OUTPUT_DIRECTORY}")
+    # message("bundle_input: ${bundle_input}")
+    # message("bundle_output: ${bundle_output}")
+
+    add_custom_command(TARGET ${name} POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+      ${bundle_input}
+      ${bundle_output}
+      COMMENT "Copying ${name} into /plugins..."
+      VERBATIM
+    )
   else()
     message(WARNING "${name} Plugin folder is empty: ${directory}")
   endif()

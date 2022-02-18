@@ -43,9 +43,6 @@ clean-cmake:
 	rm -rf ./build
 	@echo "✌️"
 
-install:
-	cmake --install ./build/make/debug/src
-
 all: gradients sp
 	@echo "Donzo! 😅"
 
@@ -55,22 +52,16 @@ all-release: sp-release
 gradients:
 	@echo "Building Gradients example plugin..."
 	cmake --build ./build/make/debug --target Gradients
-	rm -rf plugins/*
-	cmake --install ./build/make/debug/src
 	@echo "💪"
 
 sp:
 	@echo "Building SpiderPoints plugin..."
 	cmake --build ./build/make/debug --target SpiderPoints
-	rm -rf plugins/*
-	cmake --install ./build/make/debug/src
 	@echo "🕷"
 
 sp-release:
 	@echo "Building SpiderPoints RELEASE plugin..."
 	cmake --build ./build/make/release --target SpiderPoints
-	rm -rf plugins/*
-	cmake --install ./build/make/release/src
 	@echo "🕷"
 
 logs:
@@ -78,4 +69,18 @@ logs:
 	# You will need to customize this with the location of your log file
 	tail -f -n 600 /Users/marc/Library/Logs/Resolume\ Avenue/Resolume\ Avenue\ log.txt
 
+# You can ignore this task. I use it to sync my
+# changes to this repo from my private plugin repo.
+sync:
+	@echo "Synching to ffgl-playground..."
+	rsync -av --progress --delete \
+		--exclude /.git \
+		--include /.git/modules \
+		--exclude /deps/ \
+		--exclude /src/lolpxl/ \
+		--exclude /lib/lolpxl/ \
+		--exclude /build \
+		--exclude /plugins \
+		./ \
+		../playground
 
