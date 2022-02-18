@@ -21,8 +21,6 @@ macro(add_plugin name directory)
   # Build the plugin as a module library.
   add_library(${name} MODULE
     ${sources}
-    # TODO Build and include libraries instead.
-    ${LIB_SOURCES}
     # Include FFGL as pre-compiled objects.
     # Not sure why I can't get a static lib to work instead.
     # TODO extern plugMain maybe?
@@ -44,12 +42,16 @@ macro(add_plugin name directory)
     # Output a bundle file.
     set_target_properties(${name} PROPERTIES BUNDLE TRUE)
     target_include_directories(${name} PUBLIC
+      ${CMAKE_CURRENT_LIST_DIR}
       ${DEPS_INCLUDE_DIRS}
       ${LIB_INCLUDE_DIRS}
     )
 
     # Plugin dependencies
     target_link_libraries(${name}
+      # Local libraries in the /libs folder
+      ${LIBS}
+      # Other library/dependencies
       ${OPENGL}
     )
 

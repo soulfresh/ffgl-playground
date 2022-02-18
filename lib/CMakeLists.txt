@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.18)
 
 subdir_list(libraries ${CMAKE_CURRENT_LIST_DIR})
 
+set(all_headers "")
+set(all_sources "")
+set(all_libs "")
+
 # Add each subdirectory in this folder as a library that
 # can be used by the plugins.
 foreach(lib ${libraries})
@@ -13,8 +17,8 @@ foreach(lib ${libraries})
 
   # Add the files to the lib variables so they can be added to
   # the plugins.
-  set(LIB_HEADERS ${headers} PARENT_SCOPE)
-  set(LIB_SOURCES ${sources} PARENT_SCOPE)
+  list(APPEND all_headers ${headers})
+  list(APPEND all_sources ${sources})
 
   # Get an uppercased variable name we can use outside of this
   # file to refer to the files inside each library folder (ex. MYLIB_LIB_HEADERS).
@@ -24,7 +28,32 @@ foreach(lib ${libraries})
   set(${l}_LIB_HEADERS ${headers} PARENT_SCOPE)
   set(${l}_LIB_SOURCES ${sources} PARENT_SCOPE)
 
-  # TODO Compile a shared library for each.
+  # If this lib folder has sources, compile a shared library from them.
+  if(sources)
+    message(STATUS "Creating Shared Library: ${lib}")
+
+    add_library(${lib} STATIC
+      ${sources}
+      $<TARGET_OBJECTS:FFGL>
+    )
+
+    target_include_directories(${lib} PUBLIC
+      ${CMAKE_CURRENT_LIST_DIR}
+      ${DEPS_INCLUDE_DIRS}
+    )
+
+    # TODO Build any .pch files as precompiled libraries
+
+    target_link_libraries(${lib}
+      ${OPENGL}
+    )
+
+    list(APPEND all_libs ${lib})
+  endif()
 endforeach()
 
+set(LIBS ${all_libs} PARENT_SCOPE)
+set(LIB_HEADERS ${all_headers} PARENT_SCOPE)
+set(LIB_SOURCES ${all_sources} PARENT_SCOPE)
 set(LIB_INCLUDE_DIRS ${CMAKE_CURRENT_LIST_DIR} PARENT_SCOPE)
+
