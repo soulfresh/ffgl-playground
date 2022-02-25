@@ -40,11 +40,10 @@ foreach(lib ${libraries})
     )
 
     target_include_directories(${lib} PUBLIC
-      ${CMAKE_CURRENT_LIST_DIR}
+      ${CMAKE_CURRENT_LIST_DIR}/${name}
       ${DEPS_INCLUDE_DIRS}
     )
 
-    # TODO Build any .pch files as precompiled libraries
     # Precompile headers if there are any .pch files
     if(pchs)
       target_precompile_headers(${lib} PRIVATE ${pchs})

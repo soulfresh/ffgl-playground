@@ -74,11 +74,10 @@ macro(add_plugin name directory)
     set(bundle_input ${CMAKE_CURRENT_BINARY_DIR}/${bundle_name})
     set(bundle_output ${PLUGIN_OUTPUT_DIRECTORY}/${bundle_name})
 
-    # message("CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
-    # message("PLUGIN_OUTPUT_DIRECTORY: ${PLUGIN_OUTPUT_DIRECTORY}")
-    # message("bundle_input: ${bundle_input}")
-    # message("bundle_output: ${bundle_output}")
 
+    # TODO Figure out how to get this to happen even if the build artifacts
+    # have not changed. It currently only copies the directories if
+    # the bundle dependencies cause a rebuild.
     add_custom_command(TARGET ${name} POST_BUILD
       COMMAND ${CMAKE_COMMAND} -E copy_directory
       ${bundle_input}

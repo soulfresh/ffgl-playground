@@ -33,7 +33,7 @@ clean:
 	-cmake --build ./build/make/releasedebinfo --target clean
 	@echo "🧹"
 
-clean-plugins:
+clean-output:
 	@echo "Cleaning plugins folder..."
 	rm -rfv ./plugins/*
 	@echo "👋"
@@ -42,6 +42,10 @@ clean-cmake:
 	@echo "Cleaning workspaces..."
 	rm -rf ./build
 	@echo "✌️"
+
+clean-plugins:
+	@echo "Cleaning Generated Plugin Files..."
+	cmake --build ./build/make/debug --target clean
 
 all: gradients sp
 	@echo "Donzo! 😅"
