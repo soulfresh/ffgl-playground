@@ -40,7 +40,8 @@ out vec4 fragColor;
 void main()
 {
 	vec4 color = texture( InputTexture, uv );
-	//The InputTexture contains premultiplied colors, so we need to unpremultiply first to apply our effect on straight colors.
+	//The InputTexture contains premultiplied colors,
+	//so we need to unpremultiply first to apply our effect on straight colors.
 	if( color.a > 0.0 )
 		color.rgb /= color.a;
 
@@ -85,6 +86,7 @@ FFResult AddSubtract::InitGL( const FFGLViewportStruct* vp )
 	//Use base-class init as success result so that it retains the viewport.
 	return CFFGLPlugin::InitGL( vp );
 }
+
 FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 {
 	if( pGL->numInputTextures < 1 )
@@ -103,7 +105,8 @@ FFResult AddSubtract::ProcessOpenGL( ProcessOpenGLStruct* pGL )
 	shader.Set( "inputTexture", 0 );
 
 	//The input texture's dimension might change each frame and so might the content area.
-	//We're adopting the texture's maxUV using a uniform because that way we dont have to update our vertex buffer each frame.
+	//We're adopting the texture's maxUV using a uniform because that
+	//way we dont have to update our vertex buffer each frame.
 	FFGLTexCoords maxCoords = GetMaxGLTexCoords( *pGL->inputTextures[ 0 ] );
 	shader.Set( "MaxUV", maxCoords.s, maxCoords.t );
 

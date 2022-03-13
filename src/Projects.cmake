@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.18)
 
+# Check for Link Time Optimization support
 include(CheckIPOSupported)
-
 check_ipo_supported(RESULT ipo_supported OUTPUT error)
 
 ###
@@ -69,22 +69,21 @@ macro(add_plugin name directory)
     # Compile options
     target_compile_options(${name} PUBLIC ${GLOBAL_COMPILER_FLAGS})
 
-    # Copy plugin to the /plugins directory for easy access.
-    set(bundle_name ${name}.bundle)
-    set(bundle_input ${CMAKE_CURRENT_BINARY_DIR}/${bundle_name})
-    set(bundle_output ${PLUGIN_OUTPUT_DIRECTORY}/${bundle_name})
-
-
     # TODO Figure out how to get this to happen even if the build artifacts
     # have not changed. It currently only copies the directories if
     # the bundle dependencies cause a rebuild.
-    add_custom_command(TARGET ${name} POST_BUILD
-      COMMAND ${CMAKE_COMMAND} -E copy_directory
-      ${bundle_input}
-      ${bundle_output}
-      COMMENT "Copying ${name} into /plugins..."
-      VERBATIM
-    )
+    # Copy plugin to the /plugins directory for easy access.
+    # set(bundle_name ${name}.bundle)
+    # set(bundle_input ${CMAKE_CURRENT_BINARY_DIR}/${bundle_name})
+    # set(bundle_output ${PLUGIN_OUTPUT_DIRECTORY}/${bundle_name})
+    #
+    # add_custom_command(TARGET ${name} POST_BUILD
+    #   COMMAND ${CMAKE_COMMAND} -E copy_directory
+    #   ${bundle_input}
+    #   ${bundle_output}
+    #   COMMENT "Copying ${name} into /plugins..."
+    #   VERBATIM
+    # )
   else()
     message(WARNING "${name} Plugin folder is empty: ${directory}")
   endif()

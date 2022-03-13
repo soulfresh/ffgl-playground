@@ -52,6 +52,7 @@ foreach(lib ${libraries})
     target_link_libraries(${lib}
       ${OPENGL}
     )
+    target_compile_options(${lib} PUBLIC ${GLOBAL_COMPILER_FLAGS})
 
     list(APPEND all_libs ${lib})
   endif()

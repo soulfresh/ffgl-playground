@@ -47,25 +47,46 @@ clean-plugins:
 	@echo "Cleaning Generated Plugin Files..."
 	cmake --build ./build/make/debug --target clean
 
-all: gradients sp
+all: sp spm
 	@echo "Donzo! 😅"
 
 all-release: sp-release
 	@echo "🙌"
 
+playground:
+	@echo "Starting FFGL Playground ⛹️"
+	cmake --build ./build/make/debug --target Playground
+	./build/make/debug/src/playground/Playground
+	@echo "👋"
+
 gradients:
 	@echo "Building Gradients example plugin..."
 	cmake --build ./build/make/debug --target Gradients
-	@echo "💪"
+	rsync -av ./build/make/debug/src/Gradients.bundle ./plugins
+	@echo "🌈"
+
+addsubtract:
+	@echo "Building AddSubtract example plugin..."
+	cmake --build ./build/make/debug --target AddSubtract
+	rsync -av ./build/make/debug/src/AddSubtract.bundle ./plugins
+	@echo "+-"
 
 sp:
 	@echo "Building SpiderPoints plugin..."
 	cmake --build ./build/make/debug --target SpiderPoints
+	rsync -av ./build/make/debug/src/SpiderPoints.bundle ./plugins
 	@echo "🕷"
 
 sp-release:
 	@echo "Building SpiderPoints RELEASE plugin..."
 	cmake --build ./build/make/release --target SpiderPoints
+	rsync -av ./build/make/release/src/SpiderPoints.bundle ./plugins
+	@echo "🕷"
+
+spm:
+	@echo "Building SpiderPointsMask plugin..."
+	cmake --build ./build/make/debug --target SpiderPointsMask
+	rsync -av ./build/make/debug/src/SpiderPointsMask.bundle ./plugins
 	@echo "🕷"
 
 logs:
