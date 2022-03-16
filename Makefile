@@ -55,8 +55,8 @@ all-release: sp-release
 
 playground:
 	@echo "Starting FFGL Playground ⛹️"
-	cmake --build ./build/make/debug --target Playground
-	./build/make/debug/src/playground/Playground
+	cmake --build ./build/make/debug --target SpiderPointsPlayground
+	./build/make/debug/src/SpiderPointsPlayground
 	@echo "👋"
 
 gradients:
