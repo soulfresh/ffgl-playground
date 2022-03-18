@@ -11,21 +11,64 @@ set(PLUGIN_HEADERS "")
 set(PLUGIN_SOURCES "")
 
 ###
+# Build a playground executable for the given directory.
+# If no playground.cpp file exists, then the playground build
+# is skipped. To find out if a playground was created, pass
+# a variable that will be set to TRUE.
+###
+macro(add_playground name directory success)
+  # playground for this plugin
+  file(GLOB source ${directory}/Playground.cpp ${directory}/playground.cpp)
+
+  # If there's a playground file for this plugin, compile that.
+  if (source)
+    message(STATUS "Found Playground: ${name}")
+    set(${success} TRUE)
+
+    add_executable(${name}
+      ${source}
+      # Reuse plugin object files
+      # $<TARGET_OBJECTS:${objects}>
+      $<TARGET_OBJECTS:FFGL>
+    )
+
+    target_include_directories(${name} PUBLIC
+      ${drectory}
+      ${DEPS_INCLUDE_DIRS}
+      ${LIB_INCLUDE_DIRS}
+      # include glfw directly because it is only needed for playgrounds
+      ${GLFW_INCLUDE_DIRS}
+    )
+
+    target_link_libraries(${name}
+      # include glfw directly because it is only needed for playgrounds
+      glfw
+      # libraries in the /deps folder
+      ${DEPS}
+      # Local libraries in the /libs folder
+      ${LIBS}
+      # Other library/dependencies
+      ${OPENGL}
+    )
+
+    # Compile options
+    target_compile_options(${name} PUBLIC ${GLOBAL_COMPILER_FLAGS})
+  endif()
+endmacro()
+
+###
 # Add a new plugin to the build. The name of the folder and
 # the output plugin name will be the same. Every plugin is
 # built the same way. Plugins are installed in the `/plugins`
 # directory on success.
 #
 # Example:
-# add_plugin(MyPluginName)
+# add_plugin(MyPluginName ./my-plugin)
 ###
 macro(add_plugin name directory)
   # sources for this plugin
   file(GLOB_RECURSE headers ${directory}/*.hpp ${directory}/*.h)
   file(GLOB_RECURSE sources ${directory}/*.cpp)
-
-  # playground for this plugin
-  file(GLOB playsource ${directory}/Playground.cpp ${directory}/playground.cpp)
 
   # remove the playground from the actual plugin bundle compilation
   list(FILTER sources EXCLUDE REGEX "Playground.cpp")
@@ -126,38 +169,17 @@ macro(add_plugin name directory)
     message(WARNING "${name} Plugin folder is empty: ${directory}")
   endif()
 
-  # If there's a playground file for this plugin, compile that.
-  if (playsource)
-    message(STATUS "Found Playground: ${name}")
+  set(playground ${name}Playground)
+  set(playground_created "")
 
-    set(playground ${name}Playground)
-    add_executable(${playground}
-      ${playsource}
-      # Reuse plugin object files
-      $<TARGET_OBJECTS:${objects}>
-      $<TARGET_OBJECTS:FFGL>
-    )
+  # Generate a playground file if it exists.
+  add_playground(${playground} ${directory} playground_created)
 
-    target_include_directories(${playground} PUBLIC
-      ${includes}
-      # include glfw directly because it is only needed for playgrounds
-      ${GLFW_INCLUDE_DIRS}
-    )
-
-    target_link_libraries(${playground}
-      # include glfw directly because it is only needed for playgrounds
-      glfw
-      # libraries in the /deps folder
-      ${DEPS}
-      # Local libraries in the /libs folder
-      ${LIBS}
-      # Other library/dependencies
-      ${OPENGL}
-    )
-
-# Compile options
-    target_compile_options(${playground} PUBLIC ${GLOBAL_COMPILER_FLAGS})
+  # If a playground was generated, add the plugin sources to it.
+  if(${playground_created})
+    target_sources(${playground} PUBLIC $<TARGET_OBJECTS:${objects}>)
   endif()
+
 endmacro()
 
 ###
