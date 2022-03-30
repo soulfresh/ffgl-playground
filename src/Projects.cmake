@@ -27,27 +27,19 @@ macro(add_playground name directory success)
 
     add_executable(${name}
       ${source}
-      # Reuse plugin object files
-      # $<TARGET_OBJECTS:${objects}>
-      $<TARGET_OBJECTS:FFGL>
     )
 
     target_include_directories(${name} PUBLIC
       ${drectory}
+      ${PLAYGROUND_DEPS_INCLUDE_DIRS}
       ${DEPS_INCLUDE_DIRS}
       ${LIB_INCLUDE_DIRS}
-      # include glfw directly because it is only needed for playgrounds
-      ${GLFW_INCLUDE_DIRS}
     )
 
     target_link_libraries(${name}
-      # include glfw directly because it is only needed for playgrounds
-      glfw
-      # libraries in the /deps folder
+      ${PLAYGROUND_DEPS}
       ${DEPS}
-      # Local libraries in the /libs folder
       ${LIBS}
-      # Other library/dependencies
       ${OPENGL}
     )
 
@@ -85,16 +77,11 @@ macro(add_plugin name directory)
     set(objects ${name}_OBJS)
     add_library(${objects} OBJECT
       ${sources}
-      # Include FFGL as pre-compiled objects.
-      # Not sure why I can't get a static lib to work instead.
-      # TODO extern plugMain maybe?
-      $<TARGET_OBJECTS:FFGL>
     )
 
     # Build the plugin as a module library.
     add_library(${name} MODULE
       $<TARGET_OBJECTS:${objects}>
-      $<TARGET_OBJECTS:FFGL>
     )
 
     # Use link time optimizations in the release build

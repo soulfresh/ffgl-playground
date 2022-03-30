@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "lolpxl/SpiderPoints/Mesh.h"
+#include "lolpxl/mesh/SpiderPoints.h"
 
 
 static void error_callback(int error, const char* description)

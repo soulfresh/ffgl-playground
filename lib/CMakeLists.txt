@@ -36,12 +36,18 @@ foreach(lib ${libraries})
 
     add_library(${lib} STATIC
       ${sources}
-      $<TARGET_OBJECTS:FFGL>
     )
 
+    # TODO Separate out the ffglplayground build from other
+    # libraries so we don't have to link against the playground
+    # deps where they're not needed. Or is it ok to link against
+    # them and not use them?
     target_include_directories(${lib} PUBLIC
       ${CMAKE_CURRENT_LIST_DIR}/${name}
+      ${PLAYGROUND_DEPS_INCLUDE_DIRS}
       ${DEPS_INCLUDE_DIRS}
+      # Allow ffglplayground lib access to GLFW
+      ${GLFW_INCLUDE_DIRS}
     )
 
     # Precompile headers if there are any .pch files
@@ -50,6 +56,8 @@ foreach(lib ${libraries})
     endif()
 
     target_link_libraries(${lib}
+      ${PLAYGROUND_DEPS}
+      ${DEPS}
       ${OPENGL}
     )
     target_compile_options(${lib} PUBLIC ${GLOBAL_COMPILER_FLAGS})

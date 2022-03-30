@@ -13,3 +13,5 @@ build
 
 /vcpkg
 .cache
+
+imgui.ini

@@ -89,6 +89,12 @@ spm:
 	rsync -av ./build/make/debug/src/SpiderPointsMask.bundle ./plugins
 	@echo "🕷"
 
+spm-play:
+	@echo "Building SpiderPointsMask plugin..."
+	cmake --build ./build/make/debug --target SpiderPointsMaskPlayground
+	./build/make/debug/src/SpiderPointsMaskPlayground
+	@echo "🕷"
+
 logs:
 	@echo "Tailing Resolume logs..."
 	# You will need to customize this with the location of your log file
