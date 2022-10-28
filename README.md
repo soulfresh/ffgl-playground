@@ -45,8 +45,25 @@ Now you can use cmake to generate your project. The `Makefile` in the
 root of the project shows how to generate and build the project. Feel
 free to customize it with any build rules you use frequently.
 
+### Development Flow
+I like to use the make based build system so this is how I generally develop:
+
+On a new checkout, start by initializing the make builds. If you want you can
+`make all` to verify the build is working.
+
     make gen-make
     make all
+
+There are also make tasks for generating other build types (ex. XCode) in the make file.
+
+During development, I'll use the playground to build and run the plugin I'm
+working on. I create specific build targets for each of my targets for running in the
+playground and for generating debug/release builds. I'll usually have make
+tasks like the following:
+
+    make my-plug
+    make my-plug-play
+    make my-plug-release
 
 For more example plugins, copy one of the FFGL SDK plugins from
 `deps/ffgl/srouce/plugins` into the `src/examples` folder.
@@ -84,4 +101,12 @@ precompiled and included in your plugins.
 If you need a compile database generated for your IDE, you can pass
 `-DLINK_COMPILE_COMMANDS` when generating the project and the `compile_commands.json`
 file will be linked in the root of the project.
+
+## Troubleshooting
+
+### Plugin fails to load on OSX
+
+try
+
+    sudo xattr -rd com.apple.quarantine /Users/{YOUR_USERNAME}/Library/Graphics/FreeFramePlug-Ins/
 

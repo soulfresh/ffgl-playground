@@ -22,7 +22,7 @@ namespace ffglplayground {
 
       void initUI(std::function<void()> callback);
       void initUI();
-      void initGL(std::function<void(double time)> callback);
+      void initGL(std::function<void(double time, int width, int height)> callback);
       void initGL();
       void preRender(std::function<void(double time)> callback);
       void preRender();

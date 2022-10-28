@@ -62,7 +62,7 @@ int main(void)
 
     // NOTE: OpenGL error checks have been omitted for brevity
 
-    lolpxl::Mesh spider(10);
+    lolpxl::SpiderPoints spider(10);
     spider.initialize(false);
 
     spider.setStartTime(getNow());

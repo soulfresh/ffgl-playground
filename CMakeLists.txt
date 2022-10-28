@@ -33,8 +33,17 @@ list(APPEND GLOBAL_COMPILER_FLAGS
   "-Werror"
 )
 
+# Allows us to set OS specific system wide frameworks/libraries that need to be
+# used in the build products
+set(SYSTEM_FRAMEWORKS)
+
 IF( APPLE )
   list(APPEND GLOBAL_COMPILER_FLAGS "-stdlib=libc++")
+
+  # These seem to be added automatically but keeping the comment for documentation.
+  # find_library(APPKIT AppKit REQUIRED)
+  # find_library(CARBON Carbon REQUIRED)
+  # list(APPEND SYSTEM_FRAMEWORKS ${APPKIT} ${CARBON})
 ENDIF( APPLE )
 
 message("CXX Standard: ${CMAKE_CXX_STANDARD}")
@@ -49,6 +58,7 @@ file(MAKE_DIRECTORY "${PLUGIN_OUTPUT_DIR}")
 
 # System libraries that need to be loaded before the /deps folder
 find_library(OPENGL OpenGL REQUIRED)
+list(APPEND SYSTEM_FRAMEWORKS ${OPENGL})
 
 # Include the subdirectories involved in the build
 set(DEPS_DIR ${CMAKE_CURRENT_LIST_DIR}/deps)
@@ -62,6 +72,7 @@ add_subdirectory(deps)
 add_subdirectory(lib)
 add_subdirectory(src)
 
+# Generate a compile_commands.json file that can be used for IDE autocompletion.
 if (${LINK_COMPILE_COMMANDS})
   message(STATUS "Linking compile_commands.json")
   # Symlink the commands db for clangd/ccls IDE integrations

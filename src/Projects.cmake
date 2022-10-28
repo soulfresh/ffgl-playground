@@ -40,7 +40,7 @@ macro(add_playground name directory success)
       ${PLAYGROUND_DEPS}
       ${DEPS}
       ${LIBS}
-      ${OPENGL}
+      ${SYSTEM_FRAMEWORKS}
     )
 
     # Compile options
@@ -121,7 +121,7 @@ macro(add_plugin name directory)
       # Local libraries in the /libs folder
       ${LIBS}
       # Other library/dependencies
-      ${OPENGL}
+      ${SYSTEM_FRAMEWORKS}
     )
     target_link_libraries(${objects} ${libraries})
     target_link_libraries(${name} ${libraries})

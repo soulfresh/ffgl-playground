@@ -7,7 +7,7 @@ include(Projects.cmake)
 # the same precompiled headers for all plugins.
 add_executable(PCH pch.cpp $<TARGET_OBJECTS:FFGL>)
 target_include_directories(PCH PUBLIC ${DEPS_INCLUDE_DIRS})
-target_link_libraries(PCH ${OPENGL})
+target_link_libraries(PCH ${SYSTEM_FRAMEWORKS})
 
 # Only the `/deps` folder is used in the precompiled
 # headers to avoid any weirdness if the libs change.

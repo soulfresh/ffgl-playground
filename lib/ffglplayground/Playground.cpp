@@ -1,6 +1,7 @@
 #include "Playground.h"
 #include "ffglex/FFGLUtilities.h"
 #include "lolpxl/gl/FBO.h"
+#include "lolpxl/gl/debug.h"
 
 
 static void error_callback(int error, const char* description)
@@ -84,11 +85,14 @@ namespace ffglplayground {
     // but leaving this here for constistency.
   }
 
-  void FFGLPlayground::initGL(std::function<void(double time)> callback) {
+  void FFGLPlayground::initGL(std::function<void(double time, int width, int height)> callback) {
     initGL();
 
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
     // Initialize user callback
-    callback(getNow());
+    callback(getNow(), width, height);
 
     ffglex::Log("User GL Context Ready");
   }
@@ -157,10 +161,10 @@ namespace ffglplayground {
     glfwGetFramebufferSize(window, &width, &height);
     ratio = width / (float) height;
 
-    glViewport(0, 0, width, height);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnable(GL_DEPTH_TEST);
+    GL( glViewport(0, 0, width, height) );
+    GL( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
+    GL( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
+    GL( glEnable(GL_DEPTH_TEST) );
 
     // UI Render Setup
     ImGui_ImplOpenGL3_NewFrame();

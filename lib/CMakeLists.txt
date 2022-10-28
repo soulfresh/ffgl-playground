@@ -58,7 +58,7 @@ foreach(lib ${libraries})
     target_link_libraries(${lib}
       ${PLAYGROUND_DEPS}
       ${DEPS}
-      ${OPENGL}
+      ${SYSTEM_FRAMEWORKS}
     )
     target_compile_options(${lib} PUBLIC ${GLOBAL_COMPILER_FLAGS})
 
