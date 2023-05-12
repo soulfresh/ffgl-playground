@@ -1,93 +1,95 @@
-// FFGL
-#include <FFGLSDK.h>
-#include <GLFW/glfw3.h>
+#include "ffglplayground/Playground.h"
 
+#include <thread> 
 #include <chrono>
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
-#include "lolpxl/mesh/SpiderPoints.h"
+using namespace ffglplayground;
+using namespace std;
+
+int main(void) {
+  FFGLPlayground playground;
+
+  // You can do any inital UI setup work here if you want.
+  playground.initUI([&]() {});
+
+  playground.initGL([&](auto time, auto width, auto height) {
+    // Do any GL initialization here. For example, call your
+    // plugin's `InitGL` function.
+  });
+
+  bool firstPass = true;
+
+  // Accurate BPM timing
+  // https://stackoverflow.com/a/75522904
+  using frames = std::chrono::duration<std::int64_t, std::ratio<1, 60>>;
+  auto nextLoopStart = std::chrono::steady_clock::now() + frames{0};
+
+  int bpm = 30;
+  double nextBeat = 0;
+  // Used for logging frame duration
+  double lastTime = 0;
+
+  ImVec4 sectionLabelColor(0.0f, 0.5f, 1.0f, 1.0f);
+
+  // Game Loop
+  while (playground.isRunning()) {
+    // Use the `preRender` function to render your UI.
+    playground.preRender([&](auto time) {
+      ImGui::ShowDemoWindow();
 
 
-static void error_callback(int error, const char* description)
-{
-    fprintf(stderr, "Error: %s\n", description);
+      // Example ImGui slider.
+      if (ImGui::SliderFloat("Scale", &scale, 0.f, 2.f)) {
+        // Call your plugin code here to update a parameter.
+      }
+
+      // The BPM slider
+      ImGui::SliderInt("BPM", &bpm, 0, 300);
+
+      // Update the BPM tracker.
+      if (time > nextBeat) {
+        // Place any code here that you want to run on the BPM.
+
+        double beatLength = (1000.f * 60.f) / bpm;
+        nextBeat = time + beatLength;
+        lastTime = time;
+      }
+    });
+
+    // Use the `renderGL` function to draw your plugin to the screen.
+    playground.renderGL([&](auto time, auto width, auto height) {
+      // Resolume will call your plugin once with an undefined host time
+      // in order to generate a thumbnail for your plugin. This `firstPass`
+      // code is used to mimic that behavior.
+      if (firstPass) {
+        firstPass = false;
+        Log("[Playground] Beat Interval ms > ", time - lastTime, "\n");
+
+        // Do any work you'd like to do on the first pass here.
+      }
+
+      FFGLViewportStructTag vp;
+      vp.x = 0;
+      vp.y = 0;
+      vp.width = width;
+      vp.height = height;
+
+      // Call your plugin `ProcessOpenGL` function here
+    });
+
+    // Do any work you want to do after each render.
+    playground.postRender();
+
+    // Wait until the next frame.
+    nextLoopStart += frames{1};
+    std::this_thread::sleep_until(nextLoopStart);
+  }
+
+  return playground.releaseGL([&]() {
+      // Run the teardown functions for your plugin here.
+  });
 }
 
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
-}
-
-double getNow() {
-    auto time = std::chrono::system_clock::now();
-    auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(time);
-    auto epoch = now_ms.time_since_epoch();
-    auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
-    return value.count();
-}
-
-int main(void)
-{
-    auto width = 640;
-    auto height = 480;
-
-    GLFWwindow* window;
-
-    glfwSetErrorCallback(error_callback);
-
-    if (!glfwInit()) {
-      fprintf(stderr, "Failed to initialize GLFW\n");
-      exit(EXIT_FAILURE);
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // TODO Accept arguments with the plugin name
-    window = glfwCreateWindow(width, height, "FFGL Playground", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        exit(EXIT_FAILURE);
-    }
-
-    glfwSetKeyCallback(window, key_callback);
-
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
-
-    // NOTE: OpenGL error checks have been omitted for brevity
-
-    lolpxl::SpiderPoints spider(10);
-    spider.initialize(false);
-
-    spider.setStartTime(getNow());
-
-    while (!glfwWindowShouldClose(window))
-    {
-        float ratio;
-        int width, height;
-
-        glfwGetFramebufferSize(window, &width, &height);
-        ratio = width / (float) height;
-
-        glViewport(0, 0, width, height);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        spider.draw(getNow());
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    }
-
-    spider.release();
-
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-    exit(EXIT_SUCCESS);
-}

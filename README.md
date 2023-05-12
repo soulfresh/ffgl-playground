@@ -3,9 +3,9 @@ A development area for building FFGL plugins.
 
 Includes:
 - Ready to use Cmake based build system
-- Precompiled header support
 - Dependency management with git submodules
 - Language server support
+- A playground for developing plugins outside of Resolume
 
 Coming soon...
 - Plugin generator
@@ -13,6 +13,23 @@ Coming soon...
   - `imGui` integration
   - Plugin hot reload
   - Debug support
+
+## The Playground
+MennoVink has a nice FFGL testbed at https://github.com/MennoVink/FFGL_Testbed
+
+Unfortunately, the testbed stopped working for me and I'm unable
+to get it working again so I've created a "playground" in this
+project where you can run your code outside of Resolume.
+
+Ideally the playground would be an FFGL
+host but I don't have that working yet. For the moment, you need to
+manually call functions in your plugin from a `Playground.cpp` file
+next to your plugin. You can copy the `src/playground/playground.cpp`
+as a starting point.
+
+I use IMGUI to provide a components you can manually attach to your
+plugin parameters. There are a couple examples in the
+`src/playground/playground.cpp` file.
 
 ## Dependencies
 
@@ -42,29 +59,36 @@ See the `src/example` folders as for reference.
     touch src/myplugins/firstplugin/FirstPlugin.cpp
 
 Now you can use cmake to generate your project. The `Makefile` in the
-root of the project shows how to generate and build the project. Feel
-free to customize it with any build rules you use frequently.
+root of the project shows how to generate and build the project. I use it
+as a list of shortcut commands so I don't have to remember the CMake
+commands and for brevity (ex. `make sp` builds one of my plugins).
+Feel free to customize the makefile with any build rules you use frequently.
 
 ### Development Flow
-I like to use the make based build system so this is how I generally develop:
+You'll see from the makefile that I generally use Ninja to build my plugins
+from the commandline. On Windows, I use Visual Studio which will detect
+and configure itself based on the CMake files.
 
-On a new checkout, start by initializing the make builds. If you want you can
+Here's a description of my flow on the commandline:
+
+On a new checkout, start by initializing the builds. If you want you can
 `make all` to verify the build is working.
 
-    make gen-make
+    make gen
     make all
 
 There are also make tasks for generating other build types (ex. XCode) in the make file.
 
-During development, I'll use the playground to build and run the plugin I'm
+During development, I'll use the playground to build and test the plugin I'm
 working on. I create specific build targets for each of my targets for running in the
 playground and for generating debug/release builds. I'll usually have make
 tasks like the following:
 
-    make my-plug
-    make my-plug-play
-    make my-plug-release
+    make my-plug # create a debug build of a plugin 
+    make my-plug-play # start the playground for a plugin
+    make my-plug-release # create a release build
 
+There are a couple example plugins in the `src/examples` folder.
 For more example plugins, copy one of the FFGL SDK plugins from
 `deps/ffgl/srouce/plugins` into the `src/examples` folder.
 
@@ -77,7 +101,7 @@ plugins as they are built.
 See: https://github.com/resolume/ffgl/wiki/4.-Convenience-tips
 
 ## Dependency Management
-Dependencies (ie. the FFGL SDK) are installed in the project as submodules.
+Dependencies (ex. the FFGL SDK) are installed in the project as submodules.
 You can add additional dependencies however you want but here are some
 directions on how I use submodules to manage the dependencies.
 
@@ -87,6 +111,9 @@ directions on how I use submodules to manage the dependencies.
     git submodule add ${REPO_URL}
     cd ./${REPO_NAME}
     git checkout tags/${VERSION_NUMBER}
+
+Once you've checkouted the library, you can use CMake to build and include it.
+See the CMakelists and find* files in the `/deps` folder for examples.
 
 ### Removing Libraries
 
