@@ -7,29 +7,49 @@ gen-xcode:
 	cmake -B ./build/xcode -S . -G Xcode
 	@echo "🏗"
 
+gen-ninja-debug:
+	@echo "Generating Ninja based Debug project..."
+	cmake -B ./build/make/debug -S . \
+		-G Ninja \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DLINK_COMPILE_COMMANDS:string=true
+	@echo "🏗"
+
+gen-ninja-release:
+	@echo "Generating Ninja based Debug project..."
+	cmake -B ./build/make/release -S . \
+		-G Ninja \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DPUBLISH_TO_JUICEBAR=ON \
+		-DLINK_COMPILE_COMMANDS:string=true
+	@echo "🏗"
+
 gen-make-debug:
 	@echo "Generating make based Debug project..."
-	cmake -E env CXXFLAGS="--target=x86_64-apple-macos10.9" cmake -B ./build/make/debug/x86_64 -S . -DCMAKE_BUILD_TYPE=Debug -DLINK_COMPILE_COMMANDS:string=true
+	cmake -B ./build/make/debug -S . \
+		-DCMAKE_BUILD_TYPE=Debug \
+		-DLINK_COMPILE_COMMANDS:string=true
 	@echo "🏗"
 
 gen-make-release:
 	@echo "Generating make based Release project..."
-	cmake -E env CXXFLAGS="--target=x86_64-apple-macos10.9" cmake -B ./build/make/release/x86_64 -S . -DCMAKE_BUILD_TYPE=Release -DLINK_COMPILE_COMMANDS=true
-	@echo "🏗"
-
-gen-make-mulitarch:
-	@echo "Generating make based Release project for multiple architectures..."
-	cmake -E env CXXFLAGS="--target=x86_64-apple-macos10.9" cmake -B ./build/make/release/x86_64 -S . -DCMAKE_BUILD_TYPE=Release -DLINK_COMPILE_COMMANDS=true
-	cmake -E env CXXFLAGS="--target=arm64-apple-macos10.9" cmake -B ./build/make/release/arm64 -S . -DCMAKE_BUILD_TYPE=Release -DLINK_COMPILE_COMMANDS=true
+	cmake -B ./build/make/release -S . \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DPUBLISH_TO_JUICEBAR=ON \
+		-DLINK_COMPILE_COMMANDS:string=true
 	@echo "🏗"
 
 # Shorthand for my favorite build. Customize to yours.
-gen: gen-make-debug
+gen: gen-ninja-debug
 
 clean:
 	@echo "Cleaning build files..."
-	cmake --build ./build/make/debug/x86_64 --target clean
-	-cmake --build ./build/make/release/arm64 --target clean
+	cmake --build ./build/make/debug --target clean
+	@echo "🧹"
+
+clean-release:
+	@echo "Cleaning build files..."
+	cmake --build ./build/make/release --target clean
 	@echo "🧹"
 
 clean-output:
@@ -44,80 +64,62 @@ clean-cmake:
 
 clean-plugins:
 	@echo "Cleaning Generated Plugin Files..."
-	cmake --build ./build/make/debug/x86_64 --target clean
+	cmake --build ./build/make/debug --target clean
 
 all: sp spm
 	@echo "Donzo! 😅"
 
 all-release: sp-release
-	@echo "🙌"
+	@echo "Not Implemented"
+	# @echo "🙌"
 
 playground:
 	@echo "Starting FFGL Playground ⛹️"
-	cmake --build ./build/make/debug/x86_64 --target SpiderPointsPlayground
-	./build/make/debug/x86_64/src/SpiderPointsPlayground
+	cmake --build ./build/make/debug --target SpiderPointsPlayground
+	./build/make/debug/src/SpiderPointsPlayground
 	@echo "👋"
 
 gradients:
 	@echo "Building Gradients example plugin..."
-	cmake --build ./build/make/debug/x86_64 --target Gradients
-	rsync -av ./build/make/debug/x86_64/src/Gradients.bundle ./plugins
+	cmake --build ./build/make/debug --target Gradients
 	@echo "🌈"
 
 addsubtract:
 	@echo "Building AddSubtract example plugin..."
-	cmake --build ./build/make/debug/x86_64 --target AddSubtract
-	rsync -av ./build/make/debug/x86_64/src/AddSubtract.bundle ./plugins
+	cmake --build ./build/make/debug --target AddSubtract
 	@echo "+-"
 
 sp:
 	@echo "Building SpiderPoints plugin..."
-	cmake --build ./build/make/debug/x86_64 --target SpiderPoints
-	rsync -av ./build/make/debug/x86_64/src/SpiderPoints.bundle ./plugins
+	cmake --build ./build/make/debug --target SpiderPoints
 	@echo "🕷"
 
 sp-release:
 	@echo "Building SpiderPoints RELEASE plugin..."
-	cmake --build ./build/make/release/x86_64 --target SpiderPoints
-	rsync -av ./build/make/release/x86_64/src/SpiderPoints.bundle ./plugins
+	cmake --build ./build/make/release --target SpiderPoints
 	@echo "🕷"
 
 sp-play:
 	@echo "Starting FFGL Playground ⛹️"
-	cmake --build ./build/make/debug/x86_64 --target SpiderPointsPlayground
-	./build/make/debug/x86_64/src/SpiderPointsPlayground
+	cmake --build ./build/make/debug --target SpiderPointsPlayground
+	./build/make/debug/src/SpiderPointsPlayground
 	@echo "👋"
 
 spm:
 	@echo "Building SpiderPointsMask plugin..."
-	cmake --build ./build/make/debug/x86_64 --target SpiderPointsMask VERBOSE=1
-	rsync -av ./build/make/debug/x86_64/src/SpiderPointsMask.bundle ./plugins
-	@echo "🕷"
-
-spm-multiarch:
-	@echo "Building SpiderPointsMask plugin..."
-	cmake --build ./build/make/debug/arm64 --target SpiderPointsMask
-	cmake --build ./build/make/debug/x86_64 --target SpiderPointsMask
-	# Copy one of the builds as the basis for our multiarch bundle
-	cp -R ./build/make/debug/arm64/src/SpiderPointsMask.bundle ./build/make/debug/
-	# Remove the executable from our multiarch bundle
-	rm ./build/make/debug/SpiderPointsMask.bundle/Contents/MacOS/SpiderPointsMask
-	# Combine the builds from both architectures into a single executable
-	lipo -create ./build/make/debug/arm64/src/SpiderPointsMask.bundle/Contents/MacOS/SpiderPointsMask ./build/make/debug/x86_64/src/SpiderPointsMask.bundle/Contents/MacOS/SpiderPointsMask -output ./build/make/debug/SpiderPointsMask.bundle/Contents/MacOS/SpiderPointsMask
-	# Copy the multiarch executable into our multiarch bundle folder
-	rsync -av ./build/make/debug/SpiderPointsMask.bundle ./plugins
+	cmake --build ./build/make/debug --target SpiderPointsMask
+	# rsync -av ./build/make/debug/src/SpiderPointsMask.bundle ./plugins
 	@echo "🕷"
 
 spm-release:
 	@echo "Building SpiderPointsMask RELEASE plugin..."
-	cmake --build ./build/make/release/x86_64 --target SpiderPointsMask
-	rsync -av ./build/make/release/x86_64/src/SpiderPointsMask.bundle ./plugins
+	cmake --build ./build/make/release --target SpiderPointsMask
 	@echo "🕷"
 
 spm-play:
 	@echo "Building SpiderPointsMask plugin..."
-	cmake --build ./build/make/debug/x86_64 --target SpiderPointsMaskPlayground
-	./build/make/debug/x86_64/src/SpiderPointsMaskPlayground
+	cmake --build ./build/make/debug --target SpiderPointsMaskPlayground
+	./build/make/debug/src/SpiderPointsMaskPlayground
 	@echo "🕷"
 
 logs:

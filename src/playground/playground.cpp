@@ -1,7 +1,5 @@
 // FFGL
 #include <FFGLSDK.h>
-// TODO I think this might be Mac only
-#define GLFW_INCLUDE_GLCOREARB
 #include <GLFW/glfw3.h>
 
 #include <chrono>
@@ -39,8 +37,10 @@ int main(void)
 
     glfwSetErrorCallback(error_callback);
 
-    if (!glfwInit())
-        exit(EXIT_FAILURE);
+    if (!glfwInit()) {
+      fprintf(stderr, "Failed to initialize GLFW\n");
+      exit(EXIT_FAILURE);
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);

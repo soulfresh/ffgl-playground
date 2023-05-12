@@ -30,7 +30,7 @@ macro(add_playground name directory success)
     )
 
     target_include_directories(${name} PUBLIC
-      ${drectory}
+      ${directory}
       ${PLAYGROUND_DEPS_INCLUDE_DIRS}
       ${DEPS_INCLUDE_DIRS}
       ${LIB_INCLUDE_DIRS}
@@ -38,8 +38,8 @@ macro(add_playground name directory success)
 
     target_link_libraries(${name}
       ${PLAYGROUND_DEPS}
-      ${DEPS}
-      ${LIBS}
+      ${DEPS} # deps/ directory
+      ${LIBS} # libs/ directory
       ${SYSTEM_FRAMEWORKS}
     )
 
@@ -52,7 +52,8 @@ endmacro()
 # Add a new plugin to the build. The name of the folder and
 # the output plugin name will be the same. Every plugin is
 # built the same way. Plugins are installed in the `/plugins`
-# directory on success.
+# directory on success. Any `.pch` files in the plugin folder
+# will be used as precompiled headers for the plugin.
 #
 # Example:
 # add_plugin(MyPluginName ./my-plugin)
@@ -84,8 +85,12 @@ macro(add_plugin name directory)
       $<TARGET_OBJECTS:${objects}>
     )
 
+    set_target_properties(${name} PROPERTIES
+      LIBRARY_OUTPUT_DIRECTORY "${PLUGIN_OUTPUT_DIRECTORY}"
+    )
+
     # Use link time optimizations in the release build
-    if( ipo_supported AND NOT CMAKE_BUILD_TYPE MATCHES DEBUG)
+    if(RELEASE)
       set_property(TARGET ${name} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
     endif()
 
@@ -98,13 +103,15 @@ macro(add_plugin name directory)
       # Treat any file with a .pch extension as precompiled header list.
       target_precompile_headers(${objects} PUBLIC ${pchs} ${DEPS_HEADERS})
       target_precompile_headers(${name} PUBLIC ${pchs} ${DEPS_HEADERS})
-    else()
-      # Precompile all headers in deps and libs
-      target_precompile_headers(${objects} REUSE_FROM PCH)
-      target_precompile_headers(${name} REUSE_FROM PCH)
-      # I'm not sure if using the PCH library is any faster than
-      # just building on per plugin.
-      # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS})
+# TODO Turning this off for now as I think it's better to use
+# explicit .pch files
+#   else()
+#     # Precompile all headers in deps and libs
+#     target_precompile_headers(${objects} REUSE_FROM PCH)
+#     target_precompile_headers(${name} REUSE_FROM PCH)
+#     # I'm not sure if using the PCH library is any faster than
+#     # just building on per plugin.
+#     # target_precompile_headers(${name} PUBLIC ${DEPS_HEADERS})
     endif()
 
 
@@ -123,6 +130,11 @@ macro(add_plugin name directory)
       # Other library/dependencies
       ${SYSTEM_FRAMEWORKS}
     )
+    
+    if (PUBLISH_TO_JUICEBAR)
+      target_link_libraries(${name} ${RELEASE_DEPS})
+    endif()
+
     target_link_libraries(${objects} ${libraries})
     target_link_libraries(${name} ${libraries})
 

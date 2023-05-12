@@ -7,3 +7,9 @@
 [submodule "deps/glfw"]
 	path = deps/glfw
 	url = git@github.com:glfw/glfw.git
+[submodule "deps/imgui/imgui"]
+	path = deps/imgui/imgui
+	url = git@github.com:ocornut/imgui.git
+[submodule "deps/stb/stb"]
+	path = deps/stb/stb
+	url = git@github.com:nothings/stb.git

@@ -2,7 +2,9 @@
 #include "ffglex/FFGLUtilities.h"
 #include "lolpxl/gl/FBO.h"
 #include "lolpxl/gl/debug.h"
+#include <iostream>
 
+using namespace std;
 
 static void error_callback(int error, const char* description)
 {
@@ -17,19 +19,19 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 static double getNow() {
-  auto time = std::chrono::system_clock::now();
-  auto now_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(time);
-  auto epoch = now_ms.time_since_epoch();
-  auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
-  return value.count();
+  auto duration = std::chrono::system_clock::now().time_since_epoch();
+  return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
 namespace ffglplayground {
-  FFGLPlayground::FFGLPlayground(int width, int height, char const * title) :
+  FFGLPlayground::FFGLPlayground(int width, int height, char const * title, vec3 bgColor) :
     width(width),
     height(height),
-    title(title)
+    title(title),
+    bgColor(bgColor)
   {
+    startTime = getNow();
+
     ffglex::Log("Initializing GL Resources");
     glfwSetErrorCallback(error_callback);
 
@@ -43,6 +45,7 @@ namespace ffglplayground {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
 
     window = glfwCreateWindow(width, height, title, NULL, NULL);
 
@@ -65,6 +68,14 @@ namespace ffglplayground {
     glfwSwapInterval(1);
 
     ffglex::Log("GL Ready");
+  }
+
+  double FFGLPlayground::getTime() {
+    if (initialized) {
+      return getNow() - startTime;
+    } else {
+      return -DBL_MAX;
+    }
   }
 
   bool FFGLPlayground::isRunning() {
@@ -92,7 +103,7 @@ namespace ffglplayground {
     glfwGetFramebufferSize(window, &width, &height);
 
     // Initialize user callback
-    callback(getNow(), width, height);
+    callback(getTime(), width, height);
 
     ffglex::Log("User GL Context Ready");
   }
@@ -162,7 +173,8 @@ namespace ffglplayground {
     ratio = width / (float) height;
 
     GL( glViewport(0, 0, width, height) );
-    GL( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
+    GL( glClearColor(bgColor.r, bgColor.g, bgColor.b, 1.0f) );
+    // GL( glClearColor(0.0f, 0.0f, 0.0f, 1.0f) );
     GL( glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) );
     GL( glEnable(GL_DEPTH_TEST) );
 
@@ -203,7 +215,7 @@ namespace ffglplayground {
     // ImGui::Begin("Controls", &open_ptr, window_flags);
 
     ImGui::Begin("Controls");
-      callback(getNow());
+      callback(getTime());
     // if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
     // {
     //
@@ -236,7 +248,7 @@ namespace ffglplayground {
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
 
-    callback(getNow(), width, height);
+    callback(getTime(), width, height);
 
     // ImGui::Begin("Scene");
     //
@@ -254,7 +266,7 @@ namespace ffglplayground {
     //   //
     //   // add rendered texture to ImGUI scene window
     //   auto texture = fbo.render([&]() {
-    //     callback(getNow());
+    //     callback(getTime());
     //   });
     //
     //   // TODO What does reinterpret_cast do and is this ok?
@@ -282,6 +294,12 @@ namespace ffglplayground {
     // GL Render Cleanup
     glfwSwapBuffers(window);
     glfwPollEvents();
+
+    // Once postRender is complete, we know we've run at least one full
+    // preRender -> render -> postRender cycle. This allows us to immitate the
+    // effects of Resolume's `hostTime` which is uninitialized until the second
+    // render cycle.
+    initialized = true;
   }
 
   void FFGLPlayground::postRender(std::function<void()> callback) {

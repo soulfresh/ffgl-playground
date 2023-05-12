@@ -13,5 +13,9 @@ build
 
 /vcpkg
 .cache
+/.vs
 
 imgui.ini
+
+# Ignore the assets folder for now
+/assets
